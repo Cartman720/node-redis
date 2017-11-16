@@ -20,7 +20,7 @@ redisClient.on('error', function (err) {
 app.set('view engine', 'ejs');
 app.set('views', __dirname + '/views');
 
-// using body parser for parsing of POST requests body
+// using body parser for parsing POST requests body
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({
     extended: true
