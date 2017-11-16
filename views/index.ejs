@@ -1,0 +1,31 @@
+<html>
+
+<head>
+    <title>PostgreSQL and Redis task</title>
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/axios/0.17.1/axios.min.js'></script>
+</head>
+
+<body>
+    <form id="form">
+        <input id="name" type='text' />
+        <input type='submit' />
+    </form>
+
+    <script>
+        var form = document.getElementById('form');
+        var nameField = document.getElementById('name');
+
+        form.onsubmit = function (e) {
+            e.preventDefault();
+            let name = nameField.value;
+ 
+            axios.post('/', { name }).then(res => {
+                alert('Saved');
+
+                nameField.value = '';
+            });
+        }
+    </script>
+</body>
+
+</html>
