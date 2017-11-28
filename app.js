@@ -44,29 +44,32 @@ app.post('/', async (req, res) => {
         res.json({
             success: false,
             err
-        })
+        });
     }
 });
 
 app.listen(config.port, () => {
-    setInterval(async () => {
-        let keys = await redisClient.keysAsync('*');
-        let keyValuePairs = keys.map(key => new Promise(async (resolve) => {
-            let value = await redisClient.getAsync(key);
-
-            resolve({
-                name: value,
-                createdAt: Number(key)
-            });
-        }));
-
-        let instances = await Promise.all(keyValuePairs);
-
-        await db.Name.bulkCreate(instances);
-        await redisClient.flushdbAsync();
-
-        console.log(`Entries are saved and redis is cleared ${instances.length}`);
-    }, 60000);
-
-    console.log(`server listening on ${config.port}`)
+    // save data in every minute
+    setInterval(saveCache, 60000);
+    console.log(`server listening on ${config.port}`);
 });
+
+// save cached user data to database and flush redis
+async function saveCache() {
+    let keys = await redisClient.keysAsync('*');
+    let keyValuePairs = keys.map(key => new Promise(async (resolve) => {
+        let value = await redisClient.getAsync(key);
+
+        resolve({
+            name: value,
+            createdAt: Number(key)
+        });
+    }));
+
+    let instances = await Promise.all(keyValuePairs);
+
+    await db.Name.bulkCreate(instances);
+    await redisClient.flushdbAsync();
+
+    console.log(`Entries are saved and redis is cleared ${instances.length}`);
+}
